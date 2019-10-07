@@ -36,31 +36,48 @@ def parseline(pline, fileformat=227):
     ret[F_EVENT] = "GPS"
     ret[F_EVENTNAME] = "GPS Position"
     pline = pline[2:]
-    #print(pline[0], int(pline[0]))
+
+    currKey = ret[F_EVENT]
 
     try:
-        ret[F_NUMCONTEXT] = int(pline[0])
-        ret[F_CONTEXTS] = "_".join([pline[x] for x in range(1, 1 + ret[F_NUMCONTEXT])])
+        ret[currKey + "_" + F_NUMCONTEXT] = int(pline[0])
+        ret[currKey + "_" + F_CONTEXTS] = "_".join([pline[x] for x in range(1, 1 + ret[currKey + "_" + F_NUMCONTEXT])])
     except Exception as e:
-        ret[F_NUMCONTEXT] = 0
-        ret[F_CONTEXTS] = ""
-    pline = pline[1 + ret[F_NUMCONTEXT] : ] #remove pline with all context ids
+        ret[currKey + "_" + F_NUMCONTEXT] = 0
+        ret[currKey + "_" + F_CONTEXTS] = ""
+    pline = pline[1 + ret[currKey + "_" + F_NUMCONTEXT] : ] #remove pline with all context ids
 
-    ret[F_GPSLON] = pline[0]
-    ret[F_GPSLAT] = pline[1]
-    ret[F_GPSHEIGHT] = pline[2]
-    ret[F_GPSDISTANCE] = pline[3]
+    gpsHeader1 = [F_GPSLON, F_GPSLAT, F_GPSHEIGHT, F_GPSDISTANCE]
+    gpsTypes1 = [float, float, int, int]
+
+    gpsHeader2 = [F_GPSSATELLITE, F_GPSVELOCITY, F_GPSPDOP, F_GPSHDOP, F_GPSVDOP]
+    gpsTypes2 = [int, int, float, float, float]
+
+    hCItems = pline[:len(gpsHeader1)]
+    hCItems = [convTypes(hCItems[x], gpsTypes1[x]) for x in range(0, len(hCItems))]
+    ret.update(dict(zip([x for x in gpsHeader1], hCItems)))
+
+    #ret[F_GPSLON] = convTypes([pline[0]], [float])
+    #ret[F_GPSLAT] = pline[1]
+    #ret[F_GPSHEIGHT] = pline[2]
+    #ret[F_GPSDISTANCE] = pline[3]
 
     try:
         ret[F_GPSQUAL] = gpsQual[int(pline[4])]
     except:
         ret[F_GPSQUAL] = "UNK"
 
-    ret[F_GPSSATELLITE] = pline[5]
-    ret[F_GPSVELOCITY] = pline[6]
-    ret[F_GPSPDOP] = pline[7]
-    ret[F_GPSHDOP] = pline[8]
-    ret[F_GPSVDOP] = pline[9]
+    pline = pline[5:]
+
+    hCItems = pline[:len(gpsHeader2)]
+    hCItems = [convTypes(hCItems[x], gpsTypes2[x]) for x in range(0, len(hCItems))]
+    ret.update(dict(zip([x for x in gpsHeader2], hCItems)))
+
+    #ret[F_GPSSATELLITE] = pline[0]
+    #ret[F_GPSVELOCITY] = pline[1]
+    #ret[F_GPSPDOP] = pline[2]
+    #ret[F_GPSHDOP] = pline[3]
+    #ret[F_GPSVDOP] = pline[4]
 
     try:
         ret[F_GPSSTATUS] = gpsStatus[int(pline[10])]

@@ -11,13 +11,15 @@ def parseline(pline, fileformat=227):
     ret[F_EVENTNAME] = "Command Request"
     pline = pline[2:]
 
+    currKey = ret[F_EVENT]
+
     try:
-        ret[F_NUMCONTEXT] = int(pline[0])
-        ret[F_CONTEXTS] = "_".join([pline[x] for x in range(1, 1 + ret[F_NUMCONTEXT])])
+        ret[currKey + "_" + F_NUMCONTEXT] = int(pline[0])
+        ret[currKey + "_" + F_CONTEXTS] = "_".join([pline[x] for x in range(1, 1 + ret[currKey + "_" + F_NUMCONTEXT])])
     except Exception as e:
-        ret[F_NUMCONTEXT] = 0
-        ret[F_CONTEXTS] = ""
-    pline = pline[1 + ret[F_NUMCONTEXT] : ] #remove pline with all context ids
+        ret[currKey + "_" + F_NUMCONTEXT] = 0
+        ret[currKey + "_" + F_CONTEXTS] = ""
+    pline = pline[1 + ret[currKey + "_" + F_NUMCONTEXT] : ] #remove pline with all context ids
 
     ret[F_CMDREQINDEX] = pline[0]
     ret[F_CMDREQCMDNAME] = pline[1]

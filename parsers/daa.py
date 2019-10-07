@@ -53,14 +53,16 @@ def parseline(pline):
     ret[F_EVENT] = "DAA"
     ret[F_EVENTNAME] = "Data Connection Attempt"
     pline = pline[2:]
-    #print(pline[0], int(pline[0]))
+
+    currKey = ret[F_EVENT]
+
     try:
-        ret[F_NUMCONTEXT] = int(pline[0])
-        ret[F_CONTEXTS] = "_".join([pline[x] for x in range(1, 1 + ret[F_NUMCONTEXT])])
+        ret[currKey + "_" + F_NUMCONTEXT] = int(pline[0])
+        ret[currKey + "_" + F_CONTEXTS] = "_".join([pline[x] for x in range(1, 1 + ret[currKey + "_" + F_NUMCONTEXT])])
     except Exception as e:
-        ret[F_NUMCONTEXT] = 0
-        ret[F_CONTEXTS] = ""
-    pline = pline[1 + ret[F_NUMCONTEXT] : ] #remove pline with all context ids
+        ret[currKey + "_" + F_NUMCONTEXT] = 0
+        ret[currKey + "_" + F_CONTEXTS] = ""
+    pline = pline[1 + ret[currKey + "_" + F_NUMCONTEXT] : ] #remove pline with all context ids
 
     try:
         ret[F_DAAAPPPROT] = appProtocol[int(pline[0])]
@@ -72,7 +74,7 @@ def parseline(pline):
     try:
         ret[F_DAACONNTIMEOUT] = int(pline[3])
     except:
-        ret[F_DAACONNTIMEOUT] = -1
+        ret[F_DAACONNTIMEOUT] = np.nan
 
     try:
         ret[F_DAASECPROT] = secProtocol[int(pline[4])]

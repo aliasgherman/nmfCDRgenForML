@@ -9,7 +9,7 @@ import time
 from infostruct.infostruct import InfoStruct
 
 
-testdir = "/home/aamhabiby/Desktop/AAM_NMF_Parser_234/testfiles/"
+testdir = "/home/aamhabiby/Desktop/scriptTest/htp test new apk/f8vsZF5M-C5h_nmf/"
 NEWLINE = "\n"
 
 parserObjs = {"#" : parserEvents, "DAA" : daa, "GPS" :  gps}
